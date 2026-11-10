@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Inbox - TeamHub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<div class="app">
+  <aside th:replace="~{fragments :: sidebar('inbox')}"></aside>
+  <div class="main">
+    <header th:replace="~{fragments :: topbar('Inbox')}"></header>
+    <div th:replace="~{fragments :: flash}"></div>
+    <div class="cardbox">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h3 style="margin:0">Notifications</h3>
+        <form method="post" action="/inbox/read-all" th:if="${unread > 0}"><button class="btn">Mark all as read</button></form>
+      </div>
+      <div class="list">
+        <a class="item" th:each="n : ${items}" th:classappend="${!n.seen} ? 'unread'" th:href="@{/inbox/{id}/open(id=${n.id})}">
+          <div><span th:text="${n.message}">message</span>
+            <small th:text="${#temporals.format(n.createdAt,'dd MMM yyyy, hh:mm a')}">time</small></div>
+          <span class="pill" th:if="${!n.seen}">New</span>
+        </a>
+      </div>
+      <p class="muted" th:if="${#lists.isEmpty(items)}">Your inbox is empty.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

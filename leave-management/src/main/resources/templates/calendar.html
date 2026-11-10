@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Calendar - TeamHub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<div class="app">
+  <aside th:replace="~{fragments :: sidebar('calendar')}"></aside>
+  <div class="main">
+    <header th:replace="~{fragments :: topbar('Calendar')}"></header>
+    <div class="cardbox">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <h3 style="margin:0" th:text="${monthLabel}">Month</h3>
+        <div class="nav2"><a th:href="@{/calendar(ym=${prev})}">‹ Prev</a><a href="/calendar">Today</a><a th:href="@{/calendar(ym=${next})}">Next ›</a></div>
+      </div>
+      <div class="cal-big">
+        <div class="h">Sun</div><div class="h">Mon</div><div class="h">Tue</div><div class="h">Wed</div><div class="h">Thu</div><div class="h">Fri</div><div class="h">Sat</div>
+        <div th:each="b : ${blanks}"></div>
+        <div class="c" th:each="entry : ${names}" th:classappend="${entry.key == todayDay} ? 'today'">
+          <b th:text="${entry.key}">1</b>
+          <span class="chip" th:each="n : ${entry.value}" th:text="${n}">Name</span>
+        </div>
+      </div>
+      <p class="legend">Green chips show employees on approved leave.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

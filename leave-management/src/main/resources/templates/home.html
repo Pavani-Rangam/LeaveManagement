@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Dashboard - TeamHub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<div class="app">
+  <aside th:replace="~{fragments :: sidebar('home')}"></aside>
+  <div class="main">
+    <header th:replace="~{fragments :: topbar('Dashboard')}"></header>
+    <div th:replace="~{fragments :: flash}"></div>
+    <div class="cards4">
+      <div class="card hl stat"><div class="t">Total Employees</div><div class="n" th:text="${totalEmployees}">0</div></div>
+      <div class="card stat"><div class="t">On Leave Today</div><div class="n" th:text="${onLeave}">0</div></div>
+      <div class="card stat"><div class="t" th:text="${me.manager} ? 'Pending Approvals' : 'My Pending Requests'">Pending</div><div class="n" th:text="${pending}">0</div></div>
+      <div class="card stat"><div class="t">Unread Notifications</div><div class="n" th:text="${unread}">0</div></div>
+    </div>
+    <div class="grid2" style="margin-top:14px">
+      <div class="cardbox">
+        <th:block th:unless="${me.manager}"><h3>My Leave Balance</h3>
+        <div class="bal">
+          <div><b th:text="${me.annualBalance}">0</b>Annual</div>
+          <div><b th:text="${me.sickBalance}">0</b>Sick</div>
+          <div><b th:text="${me.casualBalance}">0</b>Casual</div>
+          <div><b th:text="${me.otherBalance}">0</b>Other</div>
+        </div>
+        <p><a class="btn" href="/leave/apply">+ Apply Leave</a></p></th:block>
+        <h3 style="margin-top:18px">Today's Attendance</h3>
+        <p th:if="${todayAtt == null}" class="muted">You have not checked in today. <a class="link" href="/attendance">Go to Attendance</a></p>
+        <p th:if="${todayAtt != null}">Checked in at <b th:text="${#temporals.format(todayAtt.checkIn,'hh:mm a')}"></b>
+          <span th:if="${todayAtt.checkOut != null}"> · out at <b th:text="${#temporals.format(todayAtt.checkOut,'hh:mm a')}"></b></span></p>
+      </div>
+      <div class="cardbox">
+        <h3>Upcoming Leaves</h3>
+        <div class="list">
+          <div class="item" th:each="l : ${upcoming}">
+            <div><b th:text="${l.employee.name}">Name</b><small th:text="${l.type.label}"></small></div>
+            <span class="muted" th:text="${#temporals.format(l.startDate,'dd MMM')} + ' - ' + ${#temporals.format(l.endDate,'dd MMM')}"></span>
+          </div>
+        </div>
+        <p class="muted" th:if="${#lists.isEmpty(upcoming)}">No upcoming approved leaves.</p>
+        <h3 style="margin-top:18px">Recent Notifications</h3>
+        <div class="list">
+          <a class="item" th:each="n : ${recent}" th:classappend="${!n.seen} ? 'unread'" th:href="@{/inbox/{id}/open(id=${n.id})}">
+            <span th:text="${n.message}">msg</span>
+          </a>
+        </div>
+        <p class="muted" th:if="${#lists.isEmpty(recent)}">No notifications yet.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

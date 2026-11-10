@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Settings - TeamHub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<div class="app">
+  <aside th:replace="~{fragments :: sidebar('settings')}"></aside>
+  <div class="main">
+    <header th:replace="~{fragments :: topbar('Settings')}"></header>
+    <div th:replace="~{fragments :: flash}"></div>
+    <div class="grid2">
+      <div class="cardbox">
+        <h3>Profile</h3>
+        <form method="post" action="/settings/profile" class="form">
+          <label>Full name</label><input type="text" name="name" th:value="${me.name}" required>
+          <label>Email (cannot be changed)</label><input type="text" th:value="${me.email}" disabled>
+          <label>Employee ID</label><input type="text" th:value="${me.empCode}" disabled>
+          <label>Job title</label><input type="text" name="jobTitle" th:value="${me.jobTitle}">
+          <label>Department</label><input type="text" name="department" th:value="${me.department}">
+          <br><br><button class="btn">Save profile</button>
+        </form>
+      </div>
+      <div class="cardbox">
+        <h3>Change Password</h3>
+        <form method="post" action="/settings/password" class="form">
+          <label>Current password</label><input type="password" name="current" required>
+          <label>New password</label><input type="password" name="newPassword" required>
+          <label>Confirm new password</label><input type="password" name="confirm" required>
+          <br><br><button class="btn">Change password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Payroll - TeamHub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<div class="app">
+  <aside th:replace="~{fragments :: sidebar('payroll')}"></aside>
+  <div class="main">
+    <header th:replace="~{fragments :: topbar('Payroll')}"></header>
+    <div th:replace="~{fragments :: flash}"></div>
+    <div class="cardbox" th:if="${me.manager}">
+      <h3>Generate Payslip</h3>
+      <form method="post" action="/payroll" class="formrow">
+        <div><label>Employee</label>
+          <select name="employeeId" required><option value="">Select</option>
+            <option th:each="p : ${people}" th:value="${p.id}" th:text="${p.name} + ' (' + ${p.empCode} + ')'"></option></select></div>
+        <div><label>Month</label><input type="month" name="payMonth" th:value="${thisMonth}" required></div>
+        <div><label>Basic (₹)</label><input type="number" name="basic" min="1" step="0.01" required></div>
+        <div><label>Allowances (₹)</label><input type="number" name="allowances" min="0" step="0.01" value="0"></div>
+        <div><label>Deductions (₹)</label><input type="number" name="deductions" min="0" step="0.01" value="0"></div>
+        <div><button class="btn">Generate</button></div>
+      </form>
+    </div>
+    <div class="cardbox">
+      <h3 th:text="${me.manager} ? 'All Payslips' : 'My Payslips'">Payslips</h3>
+      <table>
+        <thead><tr><th>Employee</th><th>Month</th><th>Basic</th><th>Allowances</th><th>Deductions</th><th>Net Pay</th></tr></thead>
+        <tbody>
+          <tr th:each="p : ${list}">
+            <td th:text="${p.employee.name}">Name</td>
+            <td th:text="${p.payMonth}">2026-11</td>
+            <td th:text="'₹ ' + ${#numbers.formatDecimal(p.basic,1,'COMMA',2,'POINT')}"></td>
+            <td th:text="'₹ ' + ${#numbers.formatDecimal(p.allowances,1,'COMMA',2,'POINT')}"></td>
+            <td th:text="'₹ ' + ${#numbers.formatDecimal(p.deductions,1,'COMMA',2,'POINT')}"></td>
+            <td><b th:text="'₹ ' + ${#numbers.formatDecimal(p.net,1,'COMMA',2,'POINT')}"></b></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="muted" th:if="${#lists.isEmpty(list)}">No payslips yet.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

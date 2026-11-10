@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Performance - TeamHub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<div class="app">
+  <aside th:replace="~{fragments :: sidebar('performance')}"></aside>
+  <div class="main">
+    <header th:replace="~{fragments :: topbar('Performance')}"></header>
+    <div th:replace="~{fragments :: flash}"></div>
+    <div class="cardbox" th:if="${me.manager}">
+      <h3>Add Performance Review</h3>
+      <form method="post" action="/performance" class="formrow">
+        <div><label>Employee</label>
+          <select name="employeeId" required><option value="">Select</option>
+            <option th:each="p : ${people}" th:value="${p.id}" th:text="${p.name} + ' (' + ${p.empCode} + ')'"></option></select></div>
+        <div><label>Rating (1-5)</label><input type="number" name="rating" min="1" max="5" value="5" required></div>
+        <div style="grid-column:span 2"><label>Comments</label><input type="text" name="comments" required></div>
+        <div><button class="btn">Submit</button></div>
+      </form>
+    </div>
+    <div class="cardbox">
+      <h3><span th:text="${me.manager} ? 'All Reviews' : 'My Reviews'">Reviews</span> · Average rating: <b th:text="${avg}">-</b></h3>
+      <table>
+        <thead><tr><th>Employee</th><th>Rating</th><th>Comments</th><th>Reviewed by</th><th>Date</th></tr></thead>
+        <tbody>
+          <tr th:each="r : ${list}">
+            <td th:text="${r.employee.name}">Name</td>
+            <td class="stars" th:text="${'★'.repeat(r.rating) + '☆'.repeat(5 - r.rating)}">★★★★★</td>
+            <td th:text="${r.comments}">Comments</td>
+            <td th:text="${r.reviewer.name}">Reviewer</td>
+            <td th:text="${#temporals.format(r.reviewDate,'dd MMM yyyy')}">date</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="muted" th:if="${#lists.isEmpty(list)}">No reviews yet.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

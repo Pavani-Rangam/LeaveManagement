@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Apply Leave - TeamHub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<div class="app">
+  <aside th:replace="~{fragments :: sidebar('apply')}"></aside>
+  <div class="main">
+    <header th:replace="~{fragments :: topbar('Apply Leave')}"></header>
+    <div class="card form">
+      <h3>My Leave Balance</h3>
+      <div class="bal">
+        <div><b th:text="${me.annualBalance}">0</b>Annual</div>
+        <div><b th:text="${me.sickBalance}">0</b>Sick</div>
+        <div><b th:text="${me.casualBalance}">0</b>Casual</div>
+        <div><b th:text="${me.otherBalance}">0</b>Other</div>
+      </div>
+      <div class="alert error" th:if="${error}" th:text="${error}"></div>
+      <form method="post" action="/leave/apply">
+        <label>Leave type</label>
+        <select name="type" required>
+          <option value="">Select type</option>
+          <option th:each="t : ${types}" th:value="${t}" th:text="${t.label}" th:selected="${fType == t}"></option>
+        </select>
+        <label>Start date</label>
+        <input type="date" name="startDate" th:value="${fStart}" th:min="${today}">
+        <label>End date</label>
+        <input type="date" name="endDate" th:value="${fEnd}" th:min="${today}">
+        <label>Reason</label>
+        <textarea name="reason" rows="3" th:text="${fReason}"></textarea>
+        <br><br>
+        <button class="btn">Submit request</button>
+        <a href="/dashboard" class="logout">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>

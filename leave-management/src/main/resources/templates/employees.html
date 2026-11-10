@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Employees - TeamHub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<div class="app">
+  <aside th:replace="~{fragments :: sidebar('employees')}"></aside>
+  <div class="main">
+    <header th:replace="~{fragments :: topbar('Employees')}"></header>
+    <div class="cardbox">
+      <h3>Employee Directory <small class="muted" th:if="${q != null and !q.isBlank()}" th:text="'(search: ' + ${q} + ')'"></small></h3>
+      <table>
+        <thead><tr><th>Name</th><th>Email</th><th>Job Title</th><th>Department</th><th>Role</th><th>Joined</th><th th:if="${me.manager}">Balance (A / S / C / O)</th></tr></thead>
+        <tbody>
+          <tr th:each="e : ${list}">
+            <td><div class="who"><span class="avatar" th:classappend="${'av' + (e.id % 5)}" th:text="${e.initials}">AB</span>
+              <div><b th:text="${e.name}">Name</b><small th:text="${e.empCode}">EMP</small></div></div></td>
+            <td th:text="${e.email}">mail</td>
+            <td th:text="${e.jobTitle}">title</td>
+            <td th:text="${e.department}">dept</td>
+            <td th:text="${e.manager} ? 'Admin' : 'Employee'">role</td>
+            <td th:text="${e.joinDate != null ? #temporals.format(e.joinDate,'dd MMM yyyy') : '-'}">date</td>
+            <td th:if="${me.manager}" th:text="${e.annualBalance} + ' / ' + ${e.sickBalance} + ' / ' + ${e.casualBalance} + ' / ' + ${e.otherBalance}">20 / 10 / 8 / 5</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="muted" th:if="${#lists.isEmpty(list)}">No employees found.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

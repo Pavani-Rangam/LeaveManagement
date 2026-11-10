@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Login - TeamHub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<div class="card auth">
+  <div class="brand" style="text-align:center;font-size:26px">✦ TeamHub</div>
+  <h3 style="text-align:center">Sign in</h3>
+  <div th:replace="~{fragments :: flash}"></div>
+  <form method="post" action="/login" class="form">
+    <label>Email</label><input type="email" name="email" required>
+    <label>Password</label><input type="password" name="password" required>
+    <br><br><button class="btn" style="width:100%">Login</button>
+  </form>
+  <p class="muted" style="text-align:center">New here? <a class="link" href="/register">Create an account</a></p>
+</div>
+</body>
+</html>

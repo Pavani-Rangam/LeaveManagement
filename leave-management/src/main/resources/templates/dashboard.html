@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Leave Management - TeamHub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<div class="app">
+  <aside th:replace="~{fragments :: sidebar('dashboard')}"></aside>
+  <div class="main">
+    <header th:replace="~{fragments :: topbar('Leave Management')}"></header>
+
+    <div class="alert success" th:if="${success}" th:text="${success}"></div>
+    <div class="alert error" th:if="${error}" th:text="${error}"></div>
+
+    <!-- Stat cards + donut -->
+    <div class="layout">
+      <div>
+        <div class="cards4">
+          <div class="card hl stat">
+            <div class="t">Total On Leave (Today)</div>
+            <div class="n"><span th:text="${onLeave}">0</span> <small>Employees</small></div>
+            <span class="pill" th:text="${total == 0 ? 0 : (onLeave * 100 / total)} + '% of approved'">0%</span>
+          </div>
+          <div class="card stat" th:each="s, i : ${stats}" th:if="${i.index < 3}">
+            <div class="t" th:text="${s.label()}">Annual Leave</div>
+            <div class="n"><span th:text="${s.count()}">0</span> <small>Employees</small></div>
+            <span class="pill" th:text="${s.pct()} + '% of total leave'">0%</span>
+          </div>
+        </div>
+
+        <!-- Overview / calendar / employee leaves -->
+        <div class="row2">
+          <div class="card">
+            <h3>Leave Overview <small style="font-weight:400;color:#8a9a94">(this week)</small></h3>
+            <div class="bars">
+              <div class="bar" th:each="h, i : ${weekHeights}">
+                <b th:text="${weekCounts[i.index]}" style="color:#14221d"></b>
+                <div class="fill" th:style="'height:' + ${h} + '%'"></div>
+                <span th:text="${weekLabels[i.index]}"></span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <h3 th:text="${monthLabel}">Month</h3>
+            <div class="cal">
+              <span class="dow">S</span><span class="dow">M</span><span class="dow">T</span><span class="dow">W</span><span class="dow">T</span><span class="dow">F</span><span class="dow">S</span>
+              <span th:each="b : ${blanks}"></span>
+              <span class="d" th:each="d : ${days}" th:text="${d}"
+                    th:classappend="${(leaveDays.contains(d) ? 'leave ' : '') + (d == todayDay ? 'today' : '')}"></span>
+            </div>
+            <div class="legend"><span style="color:#2fbf8f">●</span> Leave &nbsp; <span style="color:#e0453a">●</span> Today</div>
+          </div>
+          <div class="card">
+            <h3>Employee Leaves</h3>
+            <div class="emp" th:each="l, i : ${recent}">
+              <span class="avatar" th:classappend="${'av' + (l.employee.id % 5)}" th:text="${l.employee.initials}">AB</span>
+              <div>
+                <b th:text="${l.employee.name}">Name</b>
+                <small th:text="${l.type.label} + ' · ' + ${l.status.label}">Type</small>
+                <small style="color:#6b7b75" th:text="${#temporals.format(l.startDate,'dd MMM')} + ' - ' + ${#temporals.format(l.endDate,'dd MMM yyyy')}">dates</small>
+              </div>
+            </div>
+            <p th:if="${#lists.isEmpty(recent)}" class="legend">No leave requests yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Leave Types</h3>
+        <div class="donutwrap">
+          <div class="donut" th:style="'background:' + ${donut}">
+            <div class="hole"><div><span th:text="${total}">0</span><small>Employees</small></div></div>
+          </div>
+        </div>
+        <div class="lt" th:each="s : ${stats}">
+          <span class="pct" th:style="'background:' + ${s.color()} + ';color:' + (${s.pct() >= 33} ? '#fff' : '#14221d')" th:text="${s.pct()} + '%'">0%</span>
+          <span th:text="${s.label()}">Annual</span>
+          <span style="color:#8a9a94" th:text="${s.count()} + ' employee'">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leave activity -->
+    <div class="card activity" id="activity">
+      <div class="head">
+        <h3 style="margin:0" th:text="${manager} ? 'Leave Activity (all employees)' : 'My Leave History'">Leave Activity</h3>
+        <div>
+          <input type="text" id="q" placeholder="Search employee, ID, etc" onkeyup="filterRows()">
+          <a class="btn" href="/leave/apply" th:unless="${manager}">+ Apply Leave</a>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Name</th><th>Job Title</th><th>Type</th><th>Submit Date</th><th>Period</th><th>Duration</th><th>Reason</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr th:each="l : ${requests}">
+            <td><div class="who">
+              <span class="avatar" th:classappend="${'av' + (l.employee.id % 5)}" th:text="${l.employee.initials}">AB</span>
+              <div><b th:text="${l.employee.name}">Name</b><small th:text="${l.employee.empCode}">EMP</small></div></div></td>
+            <td><span th:text="${l.employee.jobTitle}">Title</span><div class="who"><small th:text="${l.employee.department}"></small></div></td>
+            <td th:text="${l.type.label}">Type</td>
+            <td th:text="${#temporals.format(l.submitDate,'dd MMM yyyy')}">date</td>
+            <td th:text="${#temporals.format(l.startDate,'dd MMM')} + ' - ' + ${#temporals.format(l.endDate,'dd MMM yyyy')}">period</td>
+            <td th:text="${l.days + (l.days == 1 ? ' Day' : ' Days')}">1 Day</td>
+            <td th:text="${l.reason}">Reason</td>
+            <td>
+              <span class="badge" th:unless="${manager and l.status.name() == 'PENDING'}"
+                    th:classappend="${l.status.name().toLowerCase()}" th:text="${l.status.label}">Status</span>
+              <th:block th:if="${manager and l.status.name() == 'PENDING'}">
+                <form class="inline" method="post" th:action="@{/leave/{id}/approve(id=${l.id})}"><button class="btn-sm ok">✓ Approve</button></form>
+                <form class="inline" method="post" th:action="@{/leave/{id}/reject(id=${l.id})}"><button class="btn-sm no">✕ Reject</button></form>
+              </th:block>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p th:if="${#lists.isEmpty(requests)}" class="legend">No leave requests found.</p>
+    </div>
+  </div>
+</div>
+<script>
+function filterRows() {
+  var q = document.getElementById('q').value.toLowerCase();
+  document.querySelectorAll('tbody tr').forEach(function (r) {
+    r.style.display = r.innerText.toLowerCase().indexOf(q) > -1 ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

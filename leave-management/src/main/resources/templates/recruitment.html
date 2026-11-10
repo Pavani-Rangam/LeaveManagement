@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Recruitment - TeamHub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<div class="app">
+  <aside th:replace="~{fragments :: sidebar('recruitment')}"></aside>
+  <div class="main">
+    <header th:replace="~{fragments :: topbar('Recruitment')}"></header>
+    <div th:replace="~{fragments :: flash}"></div>
+    <div class="cardbox" th:if="${me.manager}">
+      <h3>Post Job Opening</h3>
+      <form method="post" action="/recruitment" class="formrow">
+        <div><label>Job title</label><input type="text" name="title" required></div>
+        <div><label>Department</label><input type="text" name="department" required></div>
+        <div><label>Location</label><input type="text" name="location" required></div>
+        <div><label>Openings</label><input type="number" name="openings" min="1" value="1" required></div>
+        <div><button class="btn">Post</button></div>
+      </form>
+    </div>
+    <div class="cardbox">
+      <h3 th:text="${me.manager} ? 'All Job Openings' : 'Open Positions'">Jobs</h3>
+      <table>
+        <thead><tr><th>Title</th><th>Department</th><th>Location</th><th>Openings</th><th>Posted</th><th>Status</th><th th:if="${me.manager}"></th></tr></thead>
+        <tbody>
+          <tr th:each="j : ${list}">
+            <td><b th:text="${j.title}">Title</b></td>
+            <td th:text="${j.department}">dept</td>
+            <td th:text="${j.location}">loc</td>
+            <td th:text="${j.openings}">1</td>
+            <td th:text="${#temporals.format(j.postedDate,'dd MMM yyyy')}">date</td>
+            <td><span class="badge" th:classappend="${j.open} ? 'approved' : 'rejected'" th:text="${j.open} ? 'Open' : 'Closed'">Open</span></td>
+            <td th:if="${me.manager}"><form method="post" th:action="@{/recruitment/{id}/toggle(id=${j.id})}"><button class="btn-sm ok" th:text="${j.open} ? 'Close' : 'Reopen'">Close</button></form></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="muted" th:if="${#lists.isEmpty(list)}">No job openings yet.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

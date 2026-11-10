@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<aside th:fragment="sidebar(active)" class="sidebar">
+  <div class="brand">✦ TeamHub</div>
+  <a href="/home" th:classappend="${active == 'home'} ? 'active'">▦ Dashboard</a>
+  <a href="/inbox" th:classappend="${active == 'inbox'} ? 'active'"><span>✉ Inbox</span><i class="count" th:if="${unread > 0}" th:text="${unread}"></i></a>
+  <a href="/calendar" th:classappend="${active == 'calendar'} ? 'active'">📅 Calendar</a>
+  <a href="/employees" th:classappend="${active == 'employees'} ? 'active'">👥 Employees</a>
+  <a href="/attendance" th:classappend="${active == 'attendance'} ? 'active'">🕒 Attendance</a>
+  <a href="/performance" th:classappend="${active == 'performance'} ? 'active'">📈 Performance</a>
+  <a href="/payroll" th:classappend="${active == 'payroll'} ? 'active'">💳 Payroll</a>
+  <a href="/dashboard" th:classappend="${active == 'dashboard'} ? 'active'">🗓 Leave Management</a>
+  <a href="/leave/apply" th:unless="${me.manager}" th:classappend="${active == 'apply'} ? 'active'">➕ Apply Leave</a>
+  <a href="/recruitment" th:classappend="${active == 'recruitment'} ? 'active'">🔍 Recruitment</a>
+  <div class="promo">Level Up Your HR</div>
+</aside>
+
+<header th:fragment="topbar(title)" class="top">
+  <div>
+    <h1 th:text="${title}">Title</h1>
+    <div class="crumb">Dashboard / <span th:text="${title}"></span></div>
+  </div>
+  <div class="right">
+    <form action="/employees" method="get" style="margin:0"><input type="text" name="q" placeholder="Search employees"></form>
+    <a class="iconbtn" href="/settings" title="Settings">⚙</a>
+    <a class="iconbtn" href="/inbox" title="Notifications">🔔<i class="dot" th:if="${unread > 0}" th:text="${unread}"></i></a>
+    <a class="user" href="/settings">
+      <span class="avatar" th:text="${me.initials}">DL</span>
+      <div><b th:text="${me.name}">User</b><small th:text="${me.manager} ? 'Admin' : 'Employee'">Role</small></div>
+    </a>
+    <a class="logout" href="/logout">Logout</a>
+  </div>
+</header>
+
+<div th:fragment="flash">
+  <div class="alert success" th:if="${success}" th:text="${success}"></div>
+  <div class="alert error" th:if="${error}" th:text="${error}"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Register - TeamHub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<div class="card auth">
+  <div class="brand" style="text-align:center;font-size:26px">✦ TeamHub</div>
+  <h3 style="text-align:center">Create your account</h3>
+  <div class="alert error" th:if="${error}" th:text="${error}"></div>
+  <form method="post" action="/register" class="form">
+    <label>Register as</label>
+    <select name="role" id="role" onchange="toggleKey()">
+      <option value="EMPLOYEE" th:selected="${rRole != 'MANAGER'}">Employee</option>
+      <option value="MANAGER" th:selected="${rRole == 'MANAGER'}">Admin</option>
+    </select>
+    <div id="keybox" style="display:none">
+      <label>Admin registration key</label><input type="password" name="key" placeholder="Provided by your organisation">
+    </div>
+    <label>Full name</label><input type="text" name="name" th:value="${rName}" required>
+    <label>Email</label><input type="email" name="email" th:value="${rEmail}" required>
+    <label>Job title</label><input type="text" name="jobTitle" th:value="${rTitle}">
+    <label>Department</label><input type="text" name="department" th:value="${rDept}">
+    <label>Password (min 6 characters)</label><input type="password" name="password" required>
+    <label>Confirm password</label><input type="password" name="confirm" required>
+    <br><br><button class="btn" style="width:100%">Register</button>
+  </form>
+  <p class="muted" style="text-align:center">Already registered? <a class="link" href="/login">Login</a></p>
+</div>
+<script>
+function toggleKey(){document.getElementById('keybox').style.display=document.getElementById('role').value==='MANAGER'?'block':'none';}
+toggleKey();
+</script>
+</body>
+</html>
